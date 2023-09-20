@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import { Navbar } from "../ui";
+import { Navbar, SideMenu } from "../ui";
 
 interface Props {
   children: JSX.Element | JSX.Element[];
@@ -29,6 +29,7 @@ export const ShopLayout: React.FC<Props> = ({
 
       <nav>
         <Navbar />
+        <SideMenu />
       </nav>
 
       <main
