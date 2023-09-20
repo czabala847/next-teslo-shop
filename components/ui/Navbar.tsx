@@ -15,9 +15,17 @@ export const Navbar = () => {
   return (
     <AppBar>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Link style={{ display: "flex", alignItems: "center" }} href="/">
-          <Typography variant="h6">Teslo |</Typography>
-          <Typography sx={{ ml: 0.5 }}>Shop</Typography>
+        <Link
+          style={{
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+            color: "black",
+          }}
+          href="/"
+        >
+          <Typography variant="h6">Teslo</Typography>
+          <Typography sx={{ ml: 0.5 }}>| Shop</Typography>
         </Link>
 
         <Box sx={{ display: { xs: "none", sm: "block" } }}>
