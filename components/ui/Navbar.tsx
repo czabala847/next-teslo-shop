@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   AppBar,
   Toolbar,
@@ -10,8 +11,12 @@ import {
   Badge,
 } from "@mui/material";
 import { SearchOutlined, ShoppingCartOutlined } from "@mui/icons-material";
+import { useUiContext } from "@/context/ui";
 
 export const Navbar = () => {
+  const router = useRouter();
+  const { toggleSideMenu } = useUiContext();
+
   return (
     <AppBar>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -30,13 +35,27 @@ export const Navbar = () => {
 
         <Box sx={{ display: { xs: "none", sm: "block" } }}>
           <Link href="/category/men">
-            <Button>Hombres</Button>
+            <Button
+              color={router.pathname === "/category/men" ? "secondary" : "info"}
+            >
+              Hombres
+            </Button>
           </Link>
           <Link href="/category/women">
-            <Button>Mujeres</Button>
+            <Button
+              color={
+                router.pathname === "/category/women" ? "secondary" : "info"
+              }
+            >
+              Mujeres
+            </Button>
           </Link>
           <Link href="/category/kid">
-            <Button>Niños</Button>
+            <Button
+              color={router.pathname === "/category/kid" ? "secondary" : "info"}
+            >
+              Niños
+            </Button>
           </Link>
         </Box>
 
@@ -53,7 +72,7 @@ export const Navbar = () => {
             </IconButton>
           </Link>
 
-          <Button>Menú</Button>
+          <Button onClick={toggleSideMenu}>Menú</Button>
         </Box>
       </Toolbar>
     </AppBar>
