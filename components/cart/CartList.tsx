@@ -30,7 +30,7 @@ export const CartList: React.FC<Props> = ({ editable }) => {
         <Grid container spacing={2} key={product.slug} sx={{ mb: 1 }}>
           <Grid item xs={3}>
             {/* TODO: llevar a la página del producto */}
-            <Link href="/product/slug">
+            <Link href={`/product/${product.slug}`}>
               <CardActionArea>
                 <CardMedia
                   image={`/products/${product.images[0]}`}
