@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { Box, Button, Chip, Grid, Typography } from "@mui/material";
 
@@ -5,7 +6,7 @@ import { ShopLayout } from "@/components/layouts";
 import { ProductSlidesShow, SizeSelector } from "@/components/products";
 import { ItemCounter } from "@/components/ui";
 
-import { IProduct } from "@/interfaces";
+import { ICartProduct, IProduct, ISize } from "@/interfaces";
 import { dbProduct } from "@/database";
 
 interface Props {
@@ -13,6 +14,25 @@ interface Props {
 }
 
 const ProductPage: React.FC<Props> = ({ product }) => {
+  const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
+    _id: product._id,
+    gender: product.gender,
+    image: product.images[0],
+    price: product.price,
+    quantity: 1,
+    slug: product.slug,
+    title: product.title,
+  });
+
+  const onSelectedSize = (size: ISize) => {
+    setTempCartProduct((prevState) => {
+      return {
+        ...prevState,
+        size,
+      };
+    });
+  };
+
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
       <Grid container spacing={3}>
@@ -35,15 +55,26 @@ const ProductPage: React.FC<Props> = ({ product }) => {
             <Box sx={{ my: 2 }}>
               <Typography variant="subtitle2">Cantidad</Typography>
               <ItemCounter />
-              <SizeSelector sizes={product.sizes} />
+              <SizeSelector
+                sizes={product.sizes}
+                selectedSize={tempCartProduct.size}
+                onSelectedSize={onSelectedSize}
+              />
             </Box>
 
-            {/* Agregar al carrito */}
-            <Button color="secondary" className="circular-btn">
-              Agregar al carrito
-            </Button>
-
-            {/* <Chip label="No hay disponibles" color="error" variant='outlined' /> */}
+            {product.inStock > 0 ? (
+              <Button color="secondary" className="circular-btn">
+                {tempCartProduct.size
+                  ? "Agregar al carrito"
+                  : "Seleccione una talla"}
+              </Button>
+            ) : (
+              <Chip
+                label="No hay disponibles"
+                color="error"
+                variant="outlined"
+              />
+            )}
 
             {/* Descripción */}
             <Box sx={{ mt: 3 }}>
