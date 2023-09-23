@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -9,13 +9,27 @@ import {
   Button,
   IconButton,
   Badge,
+  Input,
+  InputAdornment,
 } from "@mui/material";
-import { SearchOutlined, ShoppingCartOutlined } from "@mui/icons-material";
+import {
+  ClearOutlined,
+  SearchOutlined,
+  ShoppingCartOutlined,
+} from "@mui/icons-material";
 import { useUiContext } from "@/context/ui";
 
 export const Navbar = () => {
   const router = useRouter();
   const { toggleSideMenu } = useUiContext();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+
+  const onSearchTerm = () => {
+    if (searchTerm.trim().length === 0) return;
+    router.push(`/search/${searchTerm}`);
+  };
 
   return (
     <AppBar>
@@ -59,8 +73,41 @@ export const Navbar = () => {
           </Link>
         </Box>
 
-        <Box>
-          <IconButton>
+        <Box display="flex">
+          {/* Pantallas pantallas grandes */}
+          {isSearchVisible ? (
+            <Input
+              sx={{ display: { xs: "none", md: "flex" } }}
+              className="fadeIn"
+              autoFocus
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={({ key }) => (key === "Enter" ? onSearchTerm() : null)}
+              type="text"
+              placeholder="Buscar..."
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setIsSearchVisible(false)}>
+                    <ClearOutlined />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          ) : (
+            <IconButton
+              onClick={() => setIsSearchVisible(true)}
+              className="fadeIn"
+              sx={{ display: { xs: "none", md: "flex" } }}
+            >
+              <SearchOutlined />
+            </IconButton>
+          )}
+
+          {/* Pantallas pequeñas */}
+          <IconButton
+            sx={{ display: { xs: "flex", sm: "none" } }}
+            onClick={toggleSideMenu}
+          >
             <SearchOutlined />
           </IconButton>
 
@@ -72,7 +119,9 @@ export const Navbar = () => {
             </IconButton>
           </Link>
 
-          <Button onClick={toggleSideMenu}>Menú</Button>
+          <Button onClick={(e) => e.detail > 0 && toggleSideMenu()}>
+            Menú
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
