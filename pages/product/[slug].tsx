@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import { Box, Button, Chip, Grid, Typography } from "@mui/material";
 
 import { ShopLayout } from "@/components/layouts";
 import { ProductSlidesShow, SizeSelector } from "@/components/products";
 import { ItemCounter } from "@/components/ui";
 
-import { ICartProduct, IProduct, ISize } from "@/interfaces";
+import { useCartContext } from "@/context/cart";
 import { dbProduct } from "@/database";
+import { ICartProduct, IProduct, ISize } from "@/interfaces";
 
 interface Props {
   product: IProduct;
@@ -23,6 +25,8 @@ const ProductPage: React.FC<Props> = ({ product }) => {
     slug: product.slug,
     title: product.title,
   });
+  const { addToCart } = useCartContext();
+  const router = useRouter();
 
   const onSelectedSize = (size: ISize) => {
     setTempCartProduct((prevState) => {
@@ -42,10 +46,11 @@ const ProductPage: React.FC<Props> = ({ product }) => {
     });
   };
 
-  const addToCart = () => {
+  const onAddToCart = () => {
     if (!tempCartProduct.size) return;
 
-    console.log(tempCartProduct);
+    addToCart(tempCartProduct);
+    router.push("/cart");
   };
 
   return (
@@ -85,7 +90,7 @@ const ProductPage: React.FC<Props> = ({ product }) => {
               <Button
                 color="secondary"
                 className="circular-btn"
-                onClick={addToCart}
+                onClick={onAddToCart}
               >
                 {tempCartProduct.size
                   ? "Agregar al carrito"

@@ -10,8 +10,13 @@ import {
 } from "@mui/material";
 import { ShopLayout } from "@/components/layouts";
 import { CartList, OrderSummary } from "@/components/cart";
+import { useCartContext } from "@/context/cart";
 
 const CartPage = () => {
+  const { cart } = useCartContext();
+
+  console.log(cart);
+
   return (
     <ShopLayout
       title="Carrito - 3"
