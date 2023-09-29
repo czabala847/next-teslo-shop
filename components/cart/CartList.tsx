@@ -11,29 +11,34 @@ import {
 } from "@mui/material";
 import { ItemCounter } from "../ui";
 
-import { initialData } from "@/database/products";
-
-const productsInCart = [
-  initialData.products[0],
-  initialData.products[1],
-  initialData.products[2],
-];
+import { useCartContext } from "@/context/cart";
 
 interface Props {
   editable?: boolean;
 }
 
 export const CartList: React.FC<Props> = ({ editable }) => {
+  const { cart } = useCartContext();
+
+  const updateQuantity = (quantity: number) => {
+    console.log(quantity);
+  };
+
   return (
     <>
-      {productsInCart.map((product) => (
-        <Grid container spacing={2} key={product.slug} sx={{ mb: 1 }}>
+      {cart.map((product) => (
+        <Grid
+          container
+          spacing={2}
+          key={`${product.slug}-${product.size}`}
+          sx={{ mb: 1 }}
+        >
           <Grid item xs={3}>
             {/* TODO: llevar a la página del producto */}
             <Link href={`/product/${product.slug}`}>
               <CardActionArea>
                 <CardMedia
-                  image={`/products/${product.images[0]}`}
+                  image={`/products/${product.image}`}
                   component="img"
                   sx={{ borderRadius: "5px" }}
                 />
@@ -48,7 +53,11 @@ export const CartList: React.FC<Props> = ({ editable }) => {
               </Typography>
 
               {editable ? (
-                <ItemCounter />
+                <ItemCounter
+                  currentValue={product.quantity}
+                  max={10}
+                  updateQuantity={updateQuantity}
+                />
               ) : (
                 <Typography variant="h5">3 items</Typography>
               )}
@@ -61,7 +70,9 @@ export const CartList: React.FC<Props> = ({ editable }) => {
             alignItems="center"
             flexDirection="column"
           >
-            <Typography variant="subtitle1">{`$${product.price}`}</Typography>
+            <Typography variant="subtitle1">{`$${
+              product.price * product.quantity
+            }`}</Typography>
 
             {editable && (
               <Button variant="text" color="secondary">

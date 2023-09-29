@@ -15,11 +15,9 @@ import { useCartContext } from "@/context/cart";
 const CartPage = () => {
   const { cart } = useCartContext();
 
-  console.log(cart);
-
   return (
     <ShopLayout
-      title="Carrito - 3"
+      title={`Carrito - ${cart.length}`}
       pageDescription={"Carrito de compras de la tienda"}
     >
       <Typography variant="h1" component="h1">

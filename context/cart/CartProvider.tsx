@@ -1,4 +1,5 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
+import Cookie from "js-cookie";
 
 import { ICartProduct } from "@/interfaces";
 import { CartContext, cartReducer } from "./";
@@ -45,6 +46,32 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
 
     dispatch({ type: "[Cart] - Update cart", payload: newCart });
   };
+
+  useEffect(() => {
+    try {
+      const cartFromCookie = Cookie.get("cart");
+
+      if (cartFromCookie) {
+        const cartParse: ICartProduct[] = JSON.parse(cartFromCookie) || [];
+        dispatch({
+          type: "[Cart] - LoadCart from cookies | storage",
+          payload: cartParse,
+        });
+      }
+    } catch (error) {
+      console.error("Cookie manipulada");
+      dispatch({
+        type: "[Cart] - LoadCart from cookies | storage",
+        payload: [],
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state.cart.length > 0) {
+      Cookie.set("cart", JSON.stringify(state.cart));
+    }
+  }, [state.cart]);
 
   return (
     <CartContext.Provider
