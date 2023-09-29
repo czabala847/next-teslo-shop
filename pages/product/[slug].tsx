@@ -33,6 +33,21 @@ const ProductPage: React.FC<Props> = ({ product }) => {
     });
   };
 
+  const updateQuantity = (quantity: number) => {
+    setTempCartProduct((prevState) => {
+      return {
+        ...prevState,
+        quantity,
+      };
+    });
+  };
+
+  const addToCart = () => {
+    if (!tempCartProduct.size) return;
+
+    console.log(tempCartProduct);
+  };
+
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
       <Grid container spacing={3}>
@@ -54,7 +69,11 @@ const ProductPage: React.FC<Props> = ({ product }) => {
             {/* Cantidad */}
             <Box sx={{ my: 2 }}>
               <Typography variant="subtitle2">Cantidad</Typography>
-              <ItemCounter />
+              <ItemCounter
+                currentValue={tempCartProduct.quantity}
+                max={product.inStock}
+                updateQuantity={updateQuantity}
+              />
               <SizeSelector
                 sizes={product.sizes}
                 selectedSize={tempCartProduct.size}
@@ -63,7 +82,11 @@ const ProductPage: React.FC<Props> = ({ product }) => {
             </Box>
 
             {product.inStock > 0 ? (
-              <Button color="secondary" className="circular-btn">
+              <Button
+                color="secondary"
+                className="circular-btn"
+                onClick={addToCart}
+              >
                 {tempCartProduct.size
                   ? "Agregar al carrito"
                   : "Seleccione una talla"}
