@@ -19,11 +19,16 @@ interface Props {
 }
 
 export const CartList: React.FC<Props> = ({ editable }) => {
-  const { cart, updateQuantityProductCart } = useCartContext();
+  const { cart, updateQuantityProductCart, removeProductInCart } =
+    useCartContext();
 
   const updateQuantity = (quantity: number, product: ICartProduct) => {
     const newProduct = { ...product, quantity };
     updateQuantityProductCart(newProduct);
+  };
+
+  const removeProduct = (product: ICartProduct) => {
+    removeProductInCart(product);
   };
 
   return (
@@ -77,7 +82,11 @@ export const CartList: React.FC<Props> = ({ editable }) => {
             }`}</Typography>
 
             {editable && (
-              <Button variant="text" color="secondary">
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={() => removeProduct(product)}
+              >
                 Remover
               </Button>
             )}
