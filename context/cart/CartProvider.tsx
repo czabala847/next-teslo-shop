@@ -47,6 +47,10 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     dispatch({ type: "[Cart] - Update cart", payload: newCart });
   };
 
+  const updateQuantityProductCart = (newProduct: ICartProduct) => {
+    dispatch({ type: "[Cart] - Update quantity cart", payload: newProduct });
+  };
+
   useEffect(() => {
     try {
       const cartFromCookie = Cookie.get("cart");
@@ -78,6 +82,7 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
       value={{
         ...state,
         addToCart,
+        updateQuantityProductCart,
       }}
     >
       {children}

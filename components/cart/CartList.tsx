@@ -12,16 +12,18 @@ import {
 import { ItemCounter } from "../ui";
 
 import { useCartContext } from "@/context/cart";
+import { ICartProduct } from "@/interfaces";
 
 interface Props {
   editable?: boolean;
 }
 
 export const CartList: React.FC<Props> = ({ editable }) => {
-  const { cart } = useCartContext();
+  const { cart, updateQuantityProductCart } = useCartContext();
 
-  const updateQuantity = (quantity: number) => {
-    console.log(quantity);
+  const updateQuantity = (quantity: number, product: ICartProduct) => {
+    const newProduct = { ...product, quantity };
+    updateQuantityProductCart(newProduct);
   };
 
   return (
@@ -49,14 +51,14 @@ export const CartList: React.FC<Props> = ({ editable }) => {
             <Box display="flex" flexDirection="column">
               <Typography variant="body1">{product.title}</Typography>
               <Typography variant="body1">
-                Talla: <strong>M</strong>
+                Talla: <strong>{product.size}</strong>
               </Typography>
 
               {editable ? (
                 <ItemCounter
                   currentValue={product.quantity}
                   max={10}
-                  updateQuantity={updateQuantity}
+                  updateQuantity={(value) => updateQuantity(value, product)}
                 />
               ) : (
                 <Typography variant="h5">3 items</Typography>
