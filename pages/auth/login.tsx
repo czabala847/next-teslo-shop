@@ -6,7 +6,9 @@ import { ErrorOutline } from "@mui/icons-material";
 
 import { AuthLayout } from "@/components/layouts";
 import { validations } from "@/utils";
+import { useAuthContext } from "@/context/auth";
 import { tesloApi } from "@/api";
+import { useRouter } from "next/router";
 
 type FormData = {
   email: string;
@@ -20,19 +22,20 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
+  const { loginUser } = useAuthContext();
+  const router = useRouter();
 
   const onLoginUser = async ({ email, password }: FormData) => {
-    try {
-      const { data } = await tesloApi.post("/user/login", { email, password });
-      const { token, user } = data;
+    setShowError(false);
+    const isValidLogin = await loginUser(email, password);
 
-      console.log({ token, user });
-    } catch (error) {
-      console.error("Error onLoginUser", error);
+    if (!isValidLogin) {
       setShowError(true);
-
       setTimeout(() => setShowError(false), 3000);
+      return;
     }
+
+    router.replace("/");
   };
 
   return (

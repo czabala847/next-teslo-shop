@@ -11,8 +11,9 @@ import { SWRConfig } from "swr/_internal";
 
 import { lightTheme } from "../themes/light-theme";
 
-import { UiProvider } from "@/context/ui";
+import { AuthProvider } from "@/context/auth";
 import { CartProvider } from "@/context/cart";
+import { UiProvider } from "@/context/ui";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -22,14 +23,16 @@ export default function App({ Component, pageProps }: AppProps) {
           fetch(resource, init).then((res) => res.json()),
       }}
     >
-      <CartProvider>
-        <UiProvider>
-          <ThemeProvider theme={lightTheme}>
-            <CssBaseline />
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </UiProvider>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <UiProvider>
+            <ThemeProvider theme={lightTheme}>
+              <CssBaseline />
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </UiProvider>
+        </CartProvider>
+      </AuthProvider>
     </SWRConfig>
   );
 }
