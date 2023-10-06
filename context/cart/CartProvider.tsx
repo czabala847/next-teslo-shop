@@ -6,10 +6,12 @@ import { CartContext, cartReducer } from "./";
 
 export interface CartState {
   cart: ICartProduct[];
+  isLoaded: boolean;
 }
 
 const CART_INITIAL_STATE: CartState = {
   cart: [],
+  isLoaded: false,
 };
 
 interface ProviderProps {
@@ -64,6 +66,11 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
         dispatch({
           type: "[Cart] - LoadCart from cookies | storage",
           payload: cartParse,
+        });
+      } else {
+        dispatch({
+          type: "[Cart] - LoadCart from cookies | storage",
+          payload: [],
         });
       }
     } catch (error) {

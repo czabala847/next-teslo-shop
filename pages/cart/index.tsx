@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Box,
   Button,
@@ -13,7 +14,16 @@ import { CartList, OrderSummary } from "@/components/cart";
 import { useCartContext } from "@/context/cart";
 
 const CartPage = () => {
-  const { cart } = useCartContext();
+  const { cart, isLoaded } = useCartContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && cart.length === 0) {
+      router.replace("/cart/empty");
+    }
+  }, [cart.length, isLoaded, router]);
+
+  if (!isLoaded || cart.length === 0) return <></>;
 
   return (
     <ShopLayout
