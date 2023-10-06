@@ -1,4 +1,5 @@
 import { useReducer, useEffect } from "react";
+import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 
 import { AuthContext, authReducer } from ".";
@@ -22,8 +23,11 @@ interface Props {
 
 export const AuthProvider: React.FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE);
+  const router = useRouter();
 
   const checkToken = async () => {
+    if (!Cookies.get("token")) return;
+
     try {
       const { data } = await tesloApi.get("/user/validate-jwt");
       const { token, user } = data;
@@ -80,6 +84,13 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
+  const logout = () => {
+    Cookies.remove("token");
+    Cookies.remove("cart");
+
+    router.reload();
+  };
+
   useEffect(() => {
     checkToken();
   }, []);
@@ -92,6 +103,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         // Methods
         loginUser,
         registerUser,
+        logout,
       }}
     >
       {children}

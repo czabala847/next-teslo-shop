@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Box, Button, Chip, Grid, TextField, Typography } from "@mui/material";
@@ -6,7 +6,6 @@ import { ErrorOutline } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 
 import { AuthLayout } from "@/components/layouts";
-import { tesloApi } from "@/api";
 import { validations } from "@/utils";
 import { useAuthContext } from "@/context/auth";
 
@@ -26,6 +25,11 @@ const RegisterPage = () => {
   const { registerUser } = useAuthContext();
   const router = useRouter();
 
+  const destination = useMemo(
+    () => router.query.p?.toString() || "/",
+    [router.query.p]
+  );
+
   const onRegisterUser = async ({ email, password, name }: FormData) => {
     setError("");
     const { hasError, message } = await registerUser(name, email, password);
@@ -36,7 +40,7 @@ const RegisterPage = () => {
       return;
     }
 
-    router.replace("/");
+    router.replace(destination);
   };
 
   return (
@@ -113,7 +117,9 @@ const RegisterPage = () => {
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="end">
-              <Link href="/auth/login">¿Ya tienes cuenta?</Link>
+              <Link href={`/auth/login?p=${destination}`}>
+                ¿Ya tienes cuenta?
+              </Link>
             </Grid>
           </Grid>
         </Box>

@@ -27,11 +27,13 @@ import {
   VpnKeyOutlined,
 } from "@mui/icons-material";
 import { useUiContext } from "@/context/ui";
+import { useAuthContext } from "@/context/auth";
 
 export const SideMenu = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const router = useRouter();
   const { isMenuOpen, toggleSideMenu } = useUiContext();
+  const { user, isLoggedIn, logout } = useAuthContext();
 
   const onSearchTerm = () => {
     if (searchTerm.trim().length === 0) return;
@@ -40,7 +42,6 @@ export const SideMenu = () => {
   };
 
   const navigateTo = (url: string) => {
-    console.log(isMenuOpen);
     toggleSideMenu();
     router.push(url);
   };
@@ -72,23 +73,27 @@ export const SideMenu = () => {
             />
           </ListItem>
 
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <AccountCircleOutlined />
-              </ListItemIcon>
-              <ListItemText primary={"Perfil"} />
-            </ListItemButton>
-          </ListItem>
+          {isLoggedIn && (
+            <>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <AccountCircleOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary={"Perfil"} />
+                </ListItemButton>
+              </ListItem>
 
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <ConfirmationNumberOutlined />
-              </ListItemIcon>
-              <ListItemText primary={"Mis Ordenes"} />
-            </ListItemButton>
-          </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <ConfirmationNumberOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary={"Mis Ordenes"} />
+                </ListItemButton>
+              </ListItem>
+            </>
+          )}
 
           <ListItem disablePadding sx={{ display: { xs: "", sm: "none" } }}>
             <ListItemButton onClick={() => navigateTo("/category/men")}>
@@ -117,53 +122,62 @@ export const SideMenu = () => {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <VpnKeyOutlined />
-              </ListItemIcon>
-              <ListItemText primary={"Ingresar"} />
-            </ListItemButton>
-          </ListItem>
+          {isLoggedIn ? (
+            <ListItem disablePadding onClick={logout}>
+              <ListItemButton>
+                <ListItemIcon>
+                  <LoginOutlined />
+                </ListItemIcon>
+                <ListItemText primary={"Salir"} />
+              </ListItemButton>
+            </ListItem>
+          ) : (
+            <ListItem
+              disablePadding
+              onClick={() => navigateTo(`/auth/login?p=${router.asPath}`)}
+            >
+              <ListItemButton>
+                <ListItemIcon>
+                  <VpnKeyOutlined />
+                </ListItemIcon>
+                <ListItemText primary={"Ingresar"} />
+              </ListItemButton>
+            </ListItem>
+          )}
 
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <LoginOutlined />
-              </ListItemIcon>
-              <ListItemText primary={"Salir"} />
-            </ListItemButton>
-          </ListItem>
+          {user && user.role === "admin" && (
+            <>
+              {/* Admin */}
+              <Divider />
+              <ListSubheader>Admin Panel</ListSubheader>
 
-          {/* Admin */}
-          <Divider />
-          <ListSubheader>Admin Panel</ListSubheader>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <CategoryOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary={"Productos"} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <ConfirmationNumberOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary={"Ordenes"} />
+                </ListItemButton>
+              </ListItem>
 
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <CategoryOutlined />
-              </ListItemIcon>
-              <ListItemText primary={"Productos"} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <ConfirmationNumberOutlined />
-              </ListItemIcon>
-              <ListItemText primary={"Ordenes"} />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <AdminPanelSettings />
-              </ListItemIcon>
-              <ListItemText primary={"Usuarios"} />
-            </ListItemButton>
-          </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <AdminPanelSettings />
+                  </ListItemIcon>
+                  <ListItemText primary={"Usuarios"} />
+                </ListItemButton>
+              </ListItem>
+            </>
+          )}
         </List>
       </Box>
     </Drawer>

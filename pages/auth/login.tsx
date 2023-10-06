@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { Box, Button, Chip, Grid, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,11 @@ const LoginPage = () => {
   const { loginUser } = useAuthContext();
   const router = useRouter();
 
+  const destination = useMemo(
+    () => router.query.p?.toString() || "/",
+    [router.query.p]
+  );
+
   const onLoginUser = async ({ email, password }: FormData) => {
     setShowError(false);
     const isValidLogin = await loginUser(email, password);
@@ -35,7 +40,7 @@ const LoginPage = () => {
       return;
     }
 
-    router.replace("/");
+    router.replace(destination);
   };
 
   return (
@@ -100,7 +105,9 @@ const LoginPage = () => {
             </Grid>
 
             <Grid item xs={12} display="flex" justifyContent="end">
-              <Link href="/auth/register">¿No tienes cuenta?</Link>
+              <Link href={`/auth/register?p=${destination}`}>
+                ¿No tienes cuenta?
+              </Link>
             </Grid>
           </Grid>
         </Box>
