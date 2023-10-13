@@ -12,8 +12,11 @@ import {
 
 import { ShopLayout } from "@/components/layouts";
 import { CartList, OrderSummary } from "@/components/cart";
+import { useCartContext } from "@/context/cart";
 
 const SummaryPage = () => {
+  const { shippingAdress, cart } = useCartContext();
+
   return (
     <ShopLayout
       title="Resumen de orden"
@@ -30,7 +33,10 @@ const SummaryPage = () => {
         <Grid item xs={12} sm={5}>
           <Card className="summary-card">
             <CardContent>
-              <Typography variant="h2">Resumen (3 productos)</Typography>
+              <Typography variant="h2">
+                Resumen{" "}
+                {`${cart.length} ${cart.length > 1 ? "productos" : "producto"}`}
+              </Typography>
               <Divider sx={{ my: 1 }} />
 
               <Box display="flex" justifyContent="space-between">
@@ -40,11 +46,22 @@ const SummaryPage = () => {
                 <Link href="/checkout/address">Editar</Link>
               </Box>
 
-              <Typography>Fernando Herrera</Typography>
-              <Typography>323 Algun lugar</Typography>
-              <Typography>Stittsville, HYA 23S</Typography>
-              <Typography>Canadá</Typography>
-              <Typography>+1 23123123</Typography>
+              {shippingAdress && (
+                <>
+                  <Typography>{`${shippingAdress.firstName} ${shippingAdress.lastName}`}</Typography>
+                  <Typography>
+                    {shippingAdress.address}{" "}
+                    {shippingAdress.address2
+                      ? `, ${shippingAdress.address2}`
+                      : ""}
+                  </Typography>
+                  <Typography>
+                    {shippingAdress.city}, {shippingAdress.zip}
+                  </Typography>
+                  <Typography>{shippingAdress.country}</Typography>
+                  <Typography>{shippingAdress.phone}</Typography>
+                </>
+              )}
 
               <Divider sx={{ my: 1 }} />
 

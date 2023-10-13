@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 // import { GetServerSideProps } from "next";
@@ -16,6 +16,7 @@ import {
 
 import { ShopLayout } from "@/components/layouts";
 import { countries } from "@/utils";
+import { useCartContext } from "@/context/cart";
 
 // import { jwt } from "@/utils";
 
@@ -30,6 +31,24 @@ type FormData = {
   phone: string;
 };
 
+const getAdressFromCookies = (): FormData => {
+  const addressData = Cookies.get("addressData");
+
+  if (!addressData)
+    return {
+      firstName: "",
+      lastName: "",
+      address: "",
+      address2: "",
+      zip: "",
+      city: "",
+      country: countries[0].code,
+      phone: "",
+    };
+
+  return JSON.parse(addressData);
+};
+
 const AddressPage = () => {
   const router = useRouter();
   const {
@@ -37,21 +56,12 @@ const AddressPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: {
-      address: "",
-      address2: "",
-      city: "",
-      country: countries[0].code,
-      firstName: "",
-      lastName: "",
-      phone: "",
-      zip: "",
-    },
+    defaultValues: getAdressFromCookies(),
   });
+  const { updateShippingAddress } = useCartContext();
 
   const onSubmit = (data: FormData) => {
-    Cookies.set("addressData", JSON.stringify(data));
-
+    updateShippingAddress(data);
     router.push("/checkout/summary");
   };
 
@@ -143,7 +153,7 @@ const AddressPage = () => {
                 select
                 variant="filled"
                 label="País"
-                defaultValue={countries[0].code}
+                defaultValue={getAdressFromCookies().country}
                 {...register("country", {
                   required: "Este campo es requerido",
                 })}

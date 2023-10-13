@@ -7,11 +7,24 @@ import { CartContext, cartReducer } from "./";
 export interface CartState {
   cart: ICartProduct[];
   isLoaded: boolean;
+  shippingAdress?: ShippingAddress;
+}
+
+export interface ShippingAddress {
+  firstName: string;
+  lastName: string;
+  address: string;
+  address2?: string;
+  zip: string;
+  city: string;
+  country: string;
+  phone: string;
 }
 
 const CART_INITIAL_STATE: CartState = {
   cart: [],
   isLoaded: false,
+  shippingAdress: undefined,
 };
 
 interface ProviderProps {
@@ -57,6 +70,11 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     dispatch({ type: "[Cart] - remove product in cart", payload: product });
   };
 
+  const updateShippingAddress = (address: ShippingAddress) => {
+    Cookie.set("addressData", JSON.stringify(address));
+    dispatch({ type: "[Cart] - update LoadAddress", payload: address });
+  };
+
   useEffect(() => {
     try {
       const cartFromCookie = Cookie.get("cart");
@@ -88,6 +106,21 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     }
   }, [state.cart]);
 
+  useEffect(() => {
+    try {
+      const shippingAddress = Cookie.get("addressData");
+
+      if (shippingAddress) {
+        dispatch({
+          type: "[Cart] - LoadAddress from cookie",
+          payload: JSON.parse(shippingAddress),
+        });
+      }
+    } catch (error) {
+      console.error("Error [Cart] - LoadAddress from cookie", error);
+    }
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
@@ -95,6 +128,7 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
         addToCart,
         updateQuantityProductCart,
         removeProductInCart,
+        updateShippingAddress,
       }}
     >
       {children}
