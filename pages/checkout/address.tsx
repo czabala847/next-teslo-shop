@@ -1,5 +1,5 @@
 import React from "react";
-import { GetServerSideProps } from "next";
+// import { GetServerSideProps } from "next";
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 import { ShopLayout } from "@/components/layouts";
-import { jwt } from "@/utils";
+// import { jwt } from "@/utils";
 
 const AddressPage = () => {
   return (
@@ -79,31 +79,31 @@ export default AddressPage;
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const { token = "" } = req.cookies;
+// export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+//   const { token = "" } = req.cookies;
 
-  let userId = "";
-  let isValidToken = false;
+//   let userId = "";
+//   let isValidToken = false;
 
-  try {
-    userId = await jwt.isValidToken(token);
-    isValidToken = true;
-  } catch (error) {
-    isValidToken = false;
-  }
+//   try {
+//     userId = await jwt.isValidToken(token);
+//     isValidToken = true;
+//   } catch (error) {
+//     isValidToken = false;
+//   }
 
-  if (!isValidToken) {
-    return {
-      redirect: {
-        destination: "/auth/login?p=/checkout/address",
-        permanent: false,
-      },
-    };
-  }
+//   if (!isValidToken) {
+//     return {
+//       redirect: {
+//         destination: "/auth/login?p=/checkout/address",
+//         permanent: false,
+//       },
+//     };
+//   }
 
-  return {
-    props: {
-      userId,
-    },
-  };
-};
+//   return {
+//     props: {
+//       userId,
+//     },
+//   };
+// };
