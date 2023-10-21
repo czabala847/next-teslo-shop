@@ -1,8 +1,19 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { dbUsers } from "@/database";
 
-export default NextAuth({
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+  }
+  interface User {
+    id?: string;
+    _id: string;
+  }
+}
+
+export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
@@ -20,9 +31,13 @@ export default NextAuth({
         },
       },
       async authorize(credentials) {
-        console.log({ credentials });
+        // const user = { _id: "1", name: "J Smith", email: "jsmith@example.com" };
+        // return user;
 
-        return null;
+        return await dbUsers.checkUserEmailPassword(
+          credentials!.email,
+          credentials!.password
+        );
       },
     }),
 
@@ -33,5 +48,30 @@ export default NextAuth({
     }),
   ],
 
-  callbacks: {},
-});
+  callbacks: {
+    async jwt({ token, account, user }) {
+      if (account) {
+        token.accessToken = account.access_token;
+
+        switch (account.type) {
+          case "oauth":
+            //TODO: Verificar si existe
+            break;
+
+          case "credentials":
+            token.user = user;
+            break;
+        }
+      }
+
+      return token;
+    },
+    async session({ session, token, user }) {
+      session.accessToken = token.accessToken as any;
+      session.user = token.user as any;
+      return session;
+    },
+  },
+};
+
+export default NextAuth(authOptions);
