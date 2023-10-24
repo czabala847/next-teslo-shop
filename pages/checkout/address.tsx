@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 // import { GetServerSideProps } from "next";
@@ -55,8 +55,18 @@ const AddressPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
-    defaultValues: getAdressFromCookies(),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      address: "",
+      address2: "",
+      zip: "",
+      city: "",
+      country: countries[0].code,
+      phone: "",
+    },
   });
   const { updateShippingAddress } = useCartContext();
 
@@ -64,6 +74,10 @@ const AddressPage = () => {
     updateShippingAddress(data);
     router.push("/checkout/summary");
   };
+
+  useEffect(() => {
+    reset(getAdressFromCookies());
+  }, [reset]);
 
   return (
     <ShopLayout

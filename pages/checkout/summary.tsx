@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   Box,
   Button,
@@ -9,6 +10,7 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import Cookies from "js-cookie";
 
 import { ShopLayout } from "@/components/layouts";
 import { CartList, OrderSummary } from "@/components/cart";
@@ -16,6 +18,13 @@ import { useCartContext } from "@/context/cart";
 
 const SummaryPage = () => {
   const { shippingAdress, cart } = useCartContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!Cookies.get("addressData")) {
+      router.push("/checkout/address");
+    }
+  }, [router]);
 
   return (
     <ShopLayout
