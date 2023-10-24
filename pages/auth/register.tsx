@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { signIn, getSession } from "next-auth/react";
 import { Box, Button, Chip, Grid, TextField, Typography } from "@mui/material";
 import { ErrorOutline } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
@@ -40,7 +42,11 @@ const RegisterPage = () => {
       return;
     }
 
-    router.replace(destination);
+    //Sin Next Auth
+    // router.replace(destination);
+
+    //Con next AUTH
+    await signIn("credentials", { email, password });
   };
 
   return (
@@ -129,3 +135,24 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const session = await getSession({ req });
+  const { p = "/" } = query;
+
+  if (session) {
+    return {
+      redirect: {
+        destination: p.toString(),
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
