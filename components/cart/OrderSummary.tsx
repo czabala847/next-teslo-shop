@@ -1,22 +1,10 @@
-import { useCartContext } from "@/context/cart";
-import { Grid, Typography } from "@mui/material";
 import React from "react";
-import { useMemo } from "react";
+import { Grid, Typography } from "@mui/material";
 
-const iva = 0.15;
+import { useCartContext } from "@/context/cart";
 
 export const OrderSummary = () => {
-  const { cart } = useCartContext();
-
-  const total = useMemo(
-    () =>
-      cart.reduce(
-        (accumulator, current) =>
-          accumulator + current.price * current.quantity,
-        0
-      ),
-    [cart]
-  );
+  const { numberOfItems, total, subTotal, tax } = useCartContext();
 
   return (
     <Grid container>
@@ -24,28 +12,28 @@ export const OrderSummary = () => {
         <Typography>No. Productos</Typography>
       </Grid>
       <Grid item xs={6} display="flex" justifyContent="end">
-        <Typography>{cart.length} items</Typography>
+        <Typography>{numberOfItems} items</Typography>
       </Grid>
 
       <Grid item xs={6}>
         <Typography>SubTotal</Typography>
       </Grid>
       <Grid item xs={6} display="flex" justifyContent="end">
-        <Typography>{`$${total}`}</Typography>
+        <Typography>{`$${subTotal}`}</Typography>
       </Grid>
 
       <Grid item xs={6}>
         <Typography>Impuestos (15%)</Typography>
       </Grid>
       <Grid item xs={6} display="flex" justifyContent="end">
-        <Typography>{`$${total * iva}`}</Typography>
+        <Typography>{`$${tax}`}</Typography>
       </Grid>
 
       <Grid item xs={6} sx={{ mt: 2 }}>
         <Typography variant="subtitle1">Total:</Typography>
       </Grid>
       <Grid item xs={6} sx={{ mt: 2 }} display="flex" justifyContent="end">
-        <Typography variant="subtitle1">{`$${total + total * iva}`}</Typography>
+        <Typography variant="subtitle1">{`$${total.toFixed(0)}`}</Typography>
       </Grid>
     </Grid>
   );

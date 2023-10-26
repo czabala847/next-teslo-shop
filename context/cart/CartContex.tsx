@@ -5,12 +5,16 @@ import { ShippingAddress } from ".";
 interface ContextProps {
   cart: ICartProduct[];
   isLoaded: boolean;
-
+  numberOfItems: number;
   shippingAdress?: ShippingAddress;
+  subTotal: number;
+  tax: number;
+  total: number;
 
   addToCart: (cartProduct: ICartProduct) => void;
-  updateQuantityProductCart: (newProduct: ICartProduct) => void;
+  createOrder: () => Promise<void>;
   removeProductInCart: (product: ICartProduct) => void;
+  updateQuantityProductCart: (newProduct: ICartProduct) => void;
   updateShippingAddress: (address: ShippingAddress) => void;
 }
 

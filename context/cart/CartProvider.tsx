@@ -1,13 +1,20 @@
 import { useEffect, useReducer } from "react";
 import Cookie from "js-cookie";
 
-import { ICartProduct } from "@/interfaces";
+import { ICartProduct, IOrder } from "@/interfaces";
 import { CartContext, cartReducer } from "./";
+import { tesloApi } from "@/api";
+
+const IVA = 0.15;
 
 export interface CartState {
   cart: ICartProduct[];
   isLoaded: boolean;
+  numberOfItems: number;
   shippingAdress?: ShippingAddress;
+  subTotal: number;
+  tax: number;
+  total: number;
 }
 
 export interface ShippingAddress {
@@ -25,6 +32,10 @@ const CART_INITIAL_STATE: CartState = {
   cart: [],
   isLoaded: false,
   shippingAdress: undefined,
+  tax: 0,
+  numberOfItems: 0,
+  subTotal: 0,
+  total: 0,
 };
 
 interface ProviderProps {
@@ -75,6 +86,33 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     dispatch({ type: "[Cart] - update LoadAddress", payload: address });
   };
 
+  const createOrder = async () => {
+    if (!state.shippingAdress) {
+      throw new Error("No hay dirección de entrega");
+    }
+
+    const body: IOrder = {
+      orderItems: state.cart.map((p) => ({
+        ...p,
+        size: p.size!,
+      })),
+      shippingAddress: state.shippingAdress,
+      numberOfItems: state.numberOfItems,
+      subTotal: state.subTotal,
+      tax: state.tax,
+      total: state.total,
+      isPaid: false,
+    };
+
+    try {
+      const { data } = await tesloApi.post("/orders", body);
+
+      console.log(data);
+    } catch (error) {
+      console.error("Error createOrder", error);
+    }
+  };
+
   useEffect(() => {
     try {
       const cartFromCookie = Cookie.get("cart");
@@ -121,13 +159,33 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const numberOfItems = state.cart.reduce(
+      (prev, current) => current.quantity + prev,
+      0
+    );
+    const subTotal = state.cart.reduce(
+      (prev, current) => current.price * current.quantity + prev,
+      0
+    );
+    const orderSummary = {
+      numberOfItems,
+      subTotal,
+      tax: subTotal * IVA,
+      total: subTotal * (IVA + 1),
+    };
+
+    dispatch({ type: "[Cart] - Update order summary", payload: orderSummary });
+  }, [state.cart]);
+
   return (
     <CartContext.Provider
       value={{
         ...state,
         addToCart,
-        updateQuantityProductCart,
+        createOrder,
         removeProductInCart,
+        updateQuantityProductCart,
         updateShippingAddress,
       }}
     >
