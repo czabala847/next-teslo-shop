@@ -12,7 +12,7 @@ interface ContextProps {
   total: number;
 
   addToCart: (cartProduct: ICartProduct) => void;
-  createOrder: () => Promise<void>;
+  createOrder: () => Promise<{ hasError: boolean; message: string }>;
   removeProductInCart: (product: ICartProduct) => void;
   updateQuantityProductCart: (newProduct: ICartProduct) => void;
   updateShippingAddress: (address: ShippingAddress) => void;

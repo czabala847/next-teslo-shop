@@ -4,6 +4,7 @@ import Cookie from "js-cookie";
 import { ICartProduct, IOrder } from "@/interfaces";
 import { CartContext, cartReducer } from "./";
 import { tesloApi } from "@/api";
+import axios from "axios";
 
 const IVA = 0.15;
 
@@ -86,7 +87,10 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     dispatch({ type: "[Cart] - update LoadAddress", payload: address });
   };
 
-  const createOrder = async () => {
+  const createOrder = async (): Promise<{
+    hasError: boolean;
+    message: string;
+  }> => {
     if (!state.shippingAdress) {
       throw new Error("No hay dirección de entrega");
     }
@@ -105,11 +109,25 @@ export const CartProvider: React.FC<ProviderProps> = ({ children }) => {
     };
 
     try {
-      const { data } = await tesloApi.post("/orders", body);
+      const { data } = await tesloApi.post<IOrder>("/orders", body);
 
-      console.log(data);
+      return {
+        hasError: false,
+        message: data._id!,
+      };
     } catch (error) {
       console.error("Error createOrder", error);
+      if (axios.isAxiosError(error)) {
+        return {
+          hasError: true,
+          message: error.response?.data.message,
+        };
+      }
+
+      return {
+        hasError: true,
+        message: "Error no controlado hable con el administrador",
+      };
     }
   };
 
