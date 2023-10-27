@@ -1,5 +1,7 @@
 import React from "react";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { getSession } from "next-auth/react";
 import {
   Chip,
   Grid,
@@ -13,8 +15,16 @@ import { CreditScoreOutlined } from "@mui/icons-material";
 
 import { ShopLayout } from "@/components/layouts";
 import { CartList, OrderSummary } from "@/components/cart";
+import { dbOrders } from "@/database";
+import { IOrder, IUser } from "@/interfaces";
 
-const OrderPage = () => {
+interface Props {
+  order: IOrder;
+}
+
+const OrderPage: React.FC<Props> = ({ order }) => {
+  console.log(order);
+
   return (
     <ShopLayout
       title="Resumen de la orden 123671523"
@@ -91,3 +101,47 @@ const OrderPage = () => {
 };
 
 export default OrderPage;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const { id = "" } = query;
+
+  const session = await getSession({ req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/auth/login?p=/orders/${id}`,
+        permanent: false,
+      },
+    };
+  }
+
+  const order = await dbOrders.getOrderById(id.toString());
+
+  if (!order) {
+    return {
+      redirect: {
+        destination: "/orders/history",
+        permanent: false,
+      },
+    };
+  }
+
+  if (order.user !== (session.user as IUser)._id) {
+    return {
+      redirect: {
+        destination: "/orders/history",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      order,
+    },
+  };
+};
