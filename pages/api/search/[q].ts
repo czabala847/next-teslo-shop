@@ -10,8 +10,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  console.log("entro aqui");
-
   switch (req.method) {
     case "GET":
       return searchProduct(req, res);

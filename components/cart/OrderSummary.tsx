@@ -3,8 +3,20 @@ import { Grid, Typography } from "@mui/material";
 
 import { useCartContext } from "@/context/cart";
 
-export const OrderSummary = () => {
-  const { numberOfItems, total, subTotal, tax } = useCartContext();
+interface Props {
+  numberOfItems?: number;
+  total?: number;
+  subTotal?: number;
+  tax?: number;
+}
+
+export const OrderSummary: React.FC<Props> = ({
+  numberOfItems,
+  subTotal,
+  tax,
+  total,
+}) => {
+  const cartContext = useCartContext();
 
   return (
     <Grid container>
@@ -12,28 +24,34 @@ export const OrderSummary = () => {
         <Typography>No. Productos</Typography>
       </Grid>
       <Grid item xs={6} display="flex" justifyContent="end">
-        <Typography>{numberOfItems} items</Typography>
+        <Typography>
+          {numberOfItems ? numberOfItems : cartContext.numberOfItems} items
+        </Typography>
       </Grid>
 
       <Grid item xs={6}>
         <Typography>SubTotal</Typography>
       </Grid>
       <Grid item xs={6} display="flex" justifyContent="end">
-        <Typography>{`$${subTotal}`}</Typography>
+        <Typography>{`$${
+          subTotal ? subTotal : cartContext.subTotal
+        }`}</Typography>
       </Grid>
 
       <Grid item xs={6}>
         <Typography>Impuestos (15%)</Typography>
       </Grid>
       <Grid item xs={6} display="flex" justifyContent="end">
-        <Typography>{`$${tax}`}</Typography>
+        <Typography>{`$${tax ? tax : cartContext.tax}`}</Typography>
       </Grid>
 
       <Grid item xs={6} sx={{ mt: 2 }}>
         <Typography variant="subtitle1">Total:</Typography>
       </Grid>
       <Grid item xs={6} sx={{ mt: 2 }} display="flex" justifyContent="end">
-        <Typography variant="subtitle1">{`$${total.toFixed(0)}`}</Typography>
+        <Typography variant="subtitle1">{`$${
+          total ? total.toFixed(0) : cartContext.total.toFixed(0)
+        }`}</Typography>
       </Grid>
     </Grid>
   );
