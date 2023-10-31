@@ -1,6 +1,7 @@
 import React from "react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import { getSession } from "next-auth/react";
 import {
   Chip,
@@ -36,6 +37,44 @@ const OrderPage: React.FC<Props> = ({ order }) => {
     tax,
     total,
   } = order;
+
+  async function createOrder(): Promise<string> {
+    const response = await fetch("/my-server/create-paypal-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // use the "body" param to optionally pass additional order information
+      // like product ids and quantities
+      body: JSON.stringify({
+        cart: [
+          {
+            id: "1",
+            quantity: "YOUR_PRODUCT_QUANTITY",
+          },
+        ],
+      }),
+    });
+    const order = await response.json();
+    console.log(order.id);
+    return order.id;
+  }
+
+  async function onApprove(data: any) {
+    const response = await fetch("/my-server/capture-paypal-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderID: data.orderID,
+      }),
+    });
+    const orderData = await response.json();
+    const name = orderData.payer.name.given_name;
+
+    alert(`Transaction completed by ${name}`);
+  }
 
   return (
     <ShopLayout
@@ -115,7 +154,10 @@ const OrderPage: React.FC<Props> = ({ order }) => {
                     icon={<CreditScoreOutlined />}
                   />
                 ) : (
-                  <h1>Pagar</h1>
+                  <PayPalButtons
+                    createOrder={createOrder}
+                    onApprove={onApprove}
+                  />
                 )}
               </Box>
             </CardContent>
