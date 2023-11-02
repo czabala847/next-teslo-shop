@@ -1,5 +1,5 @@
 import { db, seedDataBase } from "@/database";
-import { Product } from "@/models";
+import { Product, Order } from "@/models";
 import User from "@/models/User";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -22,6 +22,9 @@ export default async function handler(
 
   await Product.deleteMany();
   await Product.insertMany(seedDataBase.initialData.products);
+
+  await Order.deleteMany();
+
   await db.disconnect();
 
   res.status(200).json({ message: "Proceso realizado correctamente" });
