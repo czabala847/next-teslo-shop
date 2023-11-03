@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
+import { Grid, Select, MenuItem } from "@mui/material";
 import { PeopleOutline } from "@mui/icons-material";
 import useSWR from "swr";
-
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { Grid, Select, MenuItem } from "@mui/material";
 
-import { AdminLayout } from "../../components/layouts";
-import { IUser } from "../../interfaces";
-import { tesloApi } from "../../api";
+import { AdminLayout } from "@/components/layouts";
+import { tesloApi } from "@/api";
+import { IUser } from "@/interfaces";
 
 const UsersPage = () => {
   const { data, error } = useSWR<IUser[]>("/api/admin/users");
