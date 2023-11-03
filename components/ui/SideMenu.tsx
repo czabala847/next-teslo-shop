@@ -179,7 +179,10 @@ export const SideMenu = () => {
                 </ListItemButton>
               </ListItem>
 
-              <ListItem disablePadding>
+              <ListItem
+                disablePadding
+                onClick={() => navigateTo("/admin/users")}
+              >
                 <ListItemButton>
                   <ListItemIcon>
                     <AdminPanelSettings />
