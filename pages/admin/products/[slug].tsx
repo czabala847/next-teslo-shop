@@ -126,18 +126,18 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
     }
 
     try {
-      // console.log( file );
-      for (const file of target.files) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const { data } = await tesloApi.post<{ message: string }>(
-          "/admin/upload",
-          formData
-        );
-        setValue("images", [...getValues("images"), data.message], {
-          shouldValidate: true,
-        });
-      }
+      console.log(target.files);
+      // for (const file of target.files) {
+      //   const formData = new FormData();
+      //   formData.append("file", file);
+      //   const { data } = await tesloApi.post<{ message: string }>(
+      //     "/admin/upload",
+      //     formData
+      //   );
+      //   setValue("images", [...getValues("images"), data.message], {
+      //     shouldValidate: true,
+      //   });
+      // }
     } catch (error) {
       console.log({ error });
     }
